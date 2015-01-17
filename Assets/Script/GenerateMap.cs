@@ -103,7 +103,6 @@ public class GenerateMap : MonoBehaviour {
 			}
 
 			List<Node> sideNodes = map.vertices.Where(n => n.neighbours.Count < 4).ToList();
-			Debug.Log("count: " +  map.vertices.Count);
 
 			if(sideNodes.Count == 0)
 			{
