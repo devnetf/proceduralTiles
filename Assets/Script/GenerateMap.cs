@@ -42,42 +42,86 @@ public class GenerateMap : MonoBehaviour {
 			insertNode(curr, rightdown);
 		}
 
+		List<Node> unhandleNodes = map.vertices.Where(n => n.neighbours.Count < 6).ToList();
+
+		//add neighbor for the external nodes
+		foreach(Node curr in unhandleNodes)
+		{
+			Node tmp = map.GetNode(curr.point.x + 1, curr.point.y);
+
+			if(tmp != null)
+			{
+				curr.addNeighbour(tmp);
+			}
+
+			tmp = map.GetNode(curr.point.x-1, curr.point.y);
+			
+			if(tmp != null)
+			{
+				curr.addNeighbour(tmp);
+			}
+
+			tmp = map.GetNode(curr.point.x + 0.5f, curr.point.y + 0.75f);
+			
+			if(tmp != null)
+			{
+				curr.addNeighbour(tmp);
+			}
+
+			tmp = map.GetNode(curr.point.x + 0.5f, curr.point.y - 0.75f);
+			
+			if(tmp != null)
+			{
+				curr.addNeighbour(tmp);
+			}
+
+			tmp = map.GetNode(curr.point.x - 0.5f, curr.point.y + 0.75f);
+			
+			if(tmp != null)
+			{
+				curr.addNeighbour(tmp);
+			}
+
+			tmp = map.GetNode(curr.point.x - 0.5f, curr.point.y - 0.75f);
+			
+			if(tmp != null)
+			{
+				curr.addNeighbour(tmp);
+			}
+
+		}
+
 		int nodeRemoved = 0;
 		int index = 0, count = 0;
 
 		while(nodeRemoved < tilesToRemove)
 		{
-			if(count > 1000)
+			if(count > 10000)
 			{
 				//avoid infinite loop
 				break;
 			}
 
-			index = rand.Next(map.vertices.Count);
+			List<Node> sideNodes = map.vertices.Where(n => n.neighbours.Count < 4).ToList();
+			Debug.Log("count: " +  map.vertices.Count);
 
-			Node curr = map.vertices[index];
-			bool remove = true;
+			if(sideNodes.Count == 0)
+			{
+				count++;
+				continue;
+			}
+
+			index = rand.Next(sideNodes.Count);
+			Node curr = sideNodes[index];
 
 			foreach(Node neighboor in curr.neighbours)
 			{
-				if(neighboor.neighbours.Count <= 1)
-				{
-					remove = false;
-					break;
-				}
+				neighboor.neighbours.Remove(curr);
 			}
 
-			if(remove)
-			{
-				foreach(Node neighboor in curr.neighbours)
-				{
-					neighboor.neighbours.Remove(curr);
-				}
-
-				map.vertices.Remove(curr);
-				nodeRemoved++;
-			}
-
+			map.vertices.Remove(curr);
+			nodeRemoved++;
+		
 			count++;
 		}
 
